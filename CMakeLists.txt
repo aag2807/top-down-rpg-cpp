@@ -9,6 +9,8 @@ add_executable(Clash main.cpp
         src/dimension.cpp
         src/Character.cpp
         src/Character.h
+        src/Prop.cpp
+        src/Prop.h
 )
 
 target_link_libraries(Clash raylib)

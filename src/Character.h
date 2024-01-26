@@ -12,39 +12,15 @@ void HandleDirectionWhenKeyPressed(Vector2 &direction);
 class Character
 {
 public:
-    Vector2 getWorldPosition()
-    {
-        return this->worldPos;
-    }
+    Character(int winWidth, int winHeight);
 
-    void setScreenPosition(int width, int height)
-    {
-        screenPos = {
-                ((float) width / 2.0f - ((float) texture.width * 0.5f) / 6.0f),
-                ((float) height / 2.0f - ((float) texture.height * 0.5f))
-        };
-    }
+    Vector2 getWorldPosition();
 
-    void tick(float deltaTime)
-    {
-        Vector2 direction{};
-        HandleDirectionWhenKeyPressed(direction);
-        float directionMagnitude = Vector2Length(direction);
-        if (directionMagnitude != 0.0)
-        {
-            worldPos = Vector2Add(worldPos, Vector2Scale(Vector2Normalize(direction), speed));
-            direction.x < 0.f ? rightLeft = -1.f : rightLeft = 1.f;
-        }
-        texture = directionMagnitude != 0.0 ? run : idle;
-        updateAnimationFrames(deltaTime);
+    void tick(float deltaTime);
 
-        //drawing Character
-        Rectangle source{frame * (float) texture.width / 6.f, 0.f, rightLeft * (float) texture.width / 6.f,
-                         (float) texture.height};
-        Rectangle dest{screenPos.x, screenPos.y, 4.0f * (float) texture.width / 6.0f, 4.0f * (float) texture.height};
-        DrawTexturePro(texture, source, dest, Vector2{}, 0.f, WHITE);
-    }
+    void undoMovement();
 
+    Rectangle GetCollisionRect();
 private:
     Texture2D texture = LoadTexture("../characters/knight_idle_spritesheet.png");
     Texture2D idle = LoadTexture("../characters/knight_idle_spritesheet.png");
@@ -57,6 +33,10 @@ private:
     const float updateTime = 1.f / 12.f;
     const float speed = 0.2f;
     float rightLeft = 1.f;
+    float width = 0.f;
+    float height = 0.f;
+    const float scale = 4.f;
+    Vector2 worldPositionLastFrame{};
 
     void updateAnimationFrames(float deltaTime)
     {
@@ -66,7 +46,9 @@ private:
             frame++;
             runningTime = 0.f;
             if (frame > maxFrame)
+            {
                 frame = 0;
+            }
         }
     }
 };
