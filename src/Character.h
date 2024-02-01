@@ -1,7 +1,3 @@
-//
-// Created by Dev ATL on 26/1/24.
-//
-
 #ifndef CLASH_CHARACTER_H
 #define CLASH_CHARACTER_H
 
@@ -19,9 +15,19 @@ public:
 
     virtual Vector2 getScreenPos() override;
 
+    void handlePlayerInputs();
+
+    Rectangle getWeaponCollisionRec() { return this->weaponCollisionRec; };
+    float getHealth() const { return this->health; }
+
+    void takeDamage(float damage);
+
 private:
     int windowWidth{};
     int windowHeight{};
+    Texture2D weapon = LoadTexture("../characters/weapon_sword.png");
+    Rectangle weaponCollisionRec{};
+    float health = 100.f;
 };
 
 

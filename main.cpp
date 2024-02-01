@@ -4,6 +4,8 @@
 #include "src/Character.h"
 #include "src/Enemy.h"
 #include "src/Prop.h"
+#include <string.h>
+#include <string>
 
 int main()
 {
@@ -23,11 +25,26 @@ int main()
     };
 
     auto goblin = Enemy{
-        Vector2{700.f, 450.f}, LoadTexture("../characters/goblin_idle_spritesheet.png"),
+        Vector2{700.f, 450.f},
+        LoadTexture("../characters/goblin_idle_spritesheet.png"),
         LoadTexture("../characters/goblin_run_spritesheet.png")
     };
 
-    goblin.setTarget(&knight);
+    auto slime = Enemy{
+        Vector2{400.f, 600.f},
+        LoadTexture("../characters/slime_idle_spritesheet.png"),
+        LoadTexture("../characters/slime_run_spritesheet.png")
+    };
+
+    Enemy enemies[2] = {
+        goblin,
+        slime
+    };
+
+    for (auto &enemy: enemies)
+    {
+        enemy.setTarget(&knight);
+    }
 
     while (!WindowShouldClose())
     {
@@ -41,6 +58,17 @@ int main()
         for (Prop prop: props)
         {
             prop.Render(knight.getWorldPos());
+        }
+
+        // draw health
+        if (knight.getAlive())
+        {
+            std::string knightsHealth = "Health: ";
+            knightsHealth.append(std::to_string(knight.getHealth()), 0, 5);
+            DrawText(knightsHealth.c_str(), 55.f, 45.f, 40, RED);
+        } else
+        {
+            DrawText("You died!", 100.f, 45.f, 40, RED);
         }
 
         // executing character logic
@@ -65,7 +93,26 @@ int main()
             }
         }
 
-        goblin.tick(GetFrameTime());
+        for (auto &enemy: enemies)
+        {
+            enemy.tick(GetFrameTime());
+        }
+
+        for (auto &enemy: enemies)
+        {
+            if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && knight.getAlive())
+            {
+                auto weaponCollisionRec = knight.getCollisionRec();
+                auto enemyRec = enemy.getCollisionRec();
+
+                if (CheckCollisionRecs(weaponCollisionRec, enemyRec))
+                {
+                    enemy.setAlive(false);
+                }
+            }
+        }
+
+
 
         EndDrawing();
     }
