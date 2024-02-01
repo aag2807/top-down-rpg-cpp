@@ -112,8 +112,6 @@ int main()
             }
         }
 
-
-
         EndDrawing();
     }
 }
